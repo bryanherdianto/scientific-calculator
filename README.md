@@ -4,7 +4,7 @@ This repository contains the code for a scientific calculator website developed 
 
 ## Website
 
-The website is hosted on Vercel and is accessible at [Scientific Calculator](https://scientific-calculator-roan.vercel.app/).
+The website is hosted on Vercel and is accessible at [Scientific Calculator](https://scientific-calculator-fix.vercel.app/).
 
 ## Features
 
@@ -16,7 +16,7 @@ The website is hosted on Vercel and is accessible at [Scientific Calculator](htt
 To utilize the calculator, please follow these steps:
 
 1. **Visit the Website**:
-   - Click [here](https://scientific-calculator-roan.vercel.app/) to access the calculator on the website. You can perform calculations directly from your browser without any additional setup.
+   - Click [here](https://scientific-calculator-fix.vercel.app/) to access the calculator on the website. You can perform calculations directly from your browser without any additional setup.
 
 2. **Run Locally**:
    - If you prefer to run the calculator on your local machine:
