@@ -1,7 +1,8 @@
-from flet import *
 import math
 from math import *
 import re
+import numexpr as ne
+from flet import *
 
 
 class CalculatorApp(UserControl):
@@ -305,7 +306,7 @@ class CalculatorApp(UserControl):
                                 color=colors.WHITE,
                                 expand=1,
                                 on_click=self.button_clicked,
-                                data="",
+                                data="ENG",
                             ),
                             ElevatedButton(
                                 text="(",
@@ -746,6 +747,7 @@ class CalculatorApp(UserControl):
             self.is_calculator_on = True
             self.calculation.value = "|"
             self.cursor_pos = 0
+            self.eng_power = 0
 
         elif data == "AC" and self.is_calculator_on == True:
             if self.shift.color == self.active:
@@ -773,7 +775,10 @@ class CalculatorApp(UserControl):
             else:
                 self.cursor_pos = 0
                 self.result.value = ""
+                self.extra.value = ""
                 self.calculation.value = "|"
+                self.menu_hyp = False
+                self.menu_setup = False
 
         elif (
             data == "MODE"
@@ -852,6 +857,24 @@ class CalculatorApp(UserControl):
             self.result.value = "5) cosh⁻¹, 6) tanh⁻¹"
             self.text_box_3.alignment = MainAxisAlignment.START
             self.menu_hyp = True
+
+        elif (
+            data == "ENG"
+            and self.is_calculator_on == True
+            and self.menu_hyp == False
+            and self.menu_setup == False
+        ):
+            # Update the ENG power (cycle through -6, -3, 0, 3, 6, etc.)
+            if self.eng_power > 9:  # Limit to a reasonable range (e.g., 10^9)
+                self.eng_power = -6  # Reset to smallest value
+
+            new_value = float(ne.evaluate(self.calculation.value.replace("×", "*").replace("^", "**"))) / (10 ** self.eng_power)
+
+            self.result.value = f"{new_value:.3f}×10^{self.eng_power}"
+
+            self.update()
+            
+            self.eng_power += 3
 
         elif (
             data == "°’”"
@@ -1085,7 +1108,7 @@ class CalculatorApp(UserControl):
                         str(
                             sin(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "sin\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1102,7 +1125,7 @@ class CalculatorApp(UserControl):
                         str(
                             cos(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "cos\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1119,7 +1142,7 @@ class CalculatorApp(UserControl):
                         str(
                             tan(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "tan\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1138,7 +1161,7 @@ class CalculatorApp(UserControl):
                         str(
                             asin(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "sin⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1157,7 +1180,7 @@ class CalculatorApp(UserControl):
                         str(
                             acos(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "cos⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1176,7 +1199,7 @@ class CalculatorApp(UserControl):
                         str(
                             atan(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "tan⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1195,7 +1218,7 @@ class CalculatorApp(UserControl):
                         str(
                             sinh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "sinh\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1214,7 +1237,7 @@ class CalculatorApp(UserControl):
                         str(
                             cosh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "cosh\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1233,7 +1256,7 @@ class CalculatorApp(UserControl):
                         str(
                             tanh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "tanh\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1252,7 +1275,7 @@ class CalculatorApp(UserControl):
                         str(
                             asinh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "sinh⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1271,7 +1294,7 @@ class CalculatorApp(UserControl):
                         str(
                             acosh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "cosh⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1290,7 +1313,7 @@ class CalculatorApp(UserControl):
                         str(
                             atanh(
                                 float(
-                                    eval(
+                                    ne.evaluate(
                                         re.findall(
                                             "tanh⁻¹\(([^\)]*)", self.real_calculation
                                         )[i]
@@ -1309,7 +1332,7 @@ class CalculatorApp(UserControl):
                             sin(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "sin\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1328,7 +1351,7 @@ class CalculatorApp(UserControl):
                             cos(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "cos\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1347,7 +1370,7 @@ class CalculatorApp(UserControl):
                             tan(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "tan\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1368,7 +1391,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 asin(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "sin⁻¹\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1389,7 +1412,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 acos(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "cos⁻¹\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1410,7 +1433,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 atan(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "tan⁻¹\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1431,7 +1454,7 @@ class CalculatorApp(UserControl):
                             sinh(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "sinh\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1452,7 +1475,7 @@ class CalculatorApp(UserControl):
                             cosh(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "cosh\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1473,7 +1496,7 @@ class CalculatorApp(UserControl):
                             tanh(
                                 radians(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "tanh\(([^\)]*)", self.real_calculation
                                             )[i]
@@ -1494,7 +1517,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 asinh(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "sinh⁻¹\(([^\)]*)",
                                                 self.real_calculation,
@@ -1516,7 +1539,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 acosh(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "cosh⁻¹\(([^\)]*)",
                                                 self.real_calculation,
@@ -1538,7 +1561,7 @@ class CalculatorApp(UserControl):
                             degrees(
                                 atanh(
                                     float(
-                                        eval(
+                                        ne.evaluate(
                                             re.findall(
                                                 "tanh⁻¹\(([^\)]*)",
                                                 self.real_calculation,
@@ -1549,7 +1572,7 @@ class CalculatorApp(UserControl):
                             )
                         ),
                     )
-            self.result.value = eval(
+            self.result.value = ne.evaluate(
                 self.real_calculation.replace("Ans", str(self.prev_ans))
             )
             if degree_found == True:
